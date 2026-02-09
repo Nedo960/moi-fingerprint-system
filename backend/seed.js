@@ -8,7 +8,7 @@ async function seed() {
     {
       employee_number: '10001',
       password: 'demo123',
-      full_name: 'أحمد محمد العنزي',
+      full_name: 'محمد بدر صقر الرشيدي',
       civil_number: '281122512345',
       sector: 'قطاع الإعلام',
       directorate: 'إدارة الشؤون الإدارية',
@@ -30,7 +30,7 @@ async function seed() {
     {
       employee_number: '20001',
       password: 'demo123',
-      full_name: 'خالد سعد المطيري',
+      full_name: 'مشعل ناصر الزمنان',
       civil_number: '275033411111',
       sector: 'قطاع الإعلام',
       directorate: 'إدارة الشؤون الإدارية',
@@ -41,7 +41,7 @@ async function seed() {
     {
       employee_number: '30001',
       password: 'demo123',
-      full_name: 'محمد عبدالله الحربي',
+      full_name: 'مشعل ناصر الزمنان',
       civil_number: '268011322222',
       sector: 'قطاع الإعلام',
       directorate: 'إدارة الشؤون الإدارية',
@@ -52,7 +52,7 @@ async function seed() {
     {
       employee_number: '40001',
       password: 'demo123',
-      full_name: 'سعود ناصر العجمي',
+      full_name: 'حمد بن حيدر',
       civil_number: '260099433333',
       sector: 'قطاع الإعلام',
       directorate: 'إدارة الشؤون الإدارية',

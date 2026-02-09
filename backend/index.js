@@ -25,11 +25,11 @@ app.get('/api/setup-demo', async (req, res) => {
   try {
     const hash = async (pw) => bcrypt.hash(pw, 10);
     const users = [
-      { employee_number: '10001', password: 'demo123', full_name: 'أحمد محمد العنزي', civil_number: '281122512345', sector: 'قطاع الإعلام', directorate: 'إدارة الشؤون الإدارية', department: 'قسم الموارد البشرية', role: 'employee', email: 'employee1@demo.com' },
+      { employee_number: '10001', password: 'demo123', full_name: 'محمد بدر صقر الرشيدي', civil_number: '281122512345', sector: 'قطاع الإعلام', directorate: 'إدارة الشؤون الإدارية', department: 'قسم الموارد البشرية', role: 'employee', email: 'employee1@demo.com' },
       { employee_number: '10002', password: 'demo123', full_name: 'فاطمة علي الرشيدي', civil_number: '290456678901', sector: 'قطاع الإعلام', directorate: 'إدارة الشؤون الإدارية', department: 'قسم الموارد البشرية', role: 'employee', email: 'employee2@demo.com' },
-      { employee_number: '20001', password: 'demo123', full_name: 'خالد سعد المطيري', civil_number: '275033411111', sector: 'قطاع الإعلام', directorate: 'إدارة الشؤون الإدارية', department: 'قسم الموارد البشرية', role: 'supervisor', email: 'supervisor@demo.com' },
-      { employee_number: '30001', password: 'demo123', full_name: 'محمد عبدالله الحربي', civil_number: '268011322222', sector: 'قطاع الإعلام', directorate: 'إدارة الشؤون الإدارية', department: 'قسم الموارد البشرية', role: 'monitor', email: 'monitor@demo.com' },
-      { employee_number: '40001', password: 'demo123', full_name: 'سعود ناصر العجمي', civil_number: '260099433333', sector: 'قطاع الإعلام', directorate: 'إدارة الشؤون الإدارية', department: 'قسم الموارد البشرية', role: 'admin', email: 'admin@demo.com' }
+      { employee_number: '20001', password: 'demo123', full_name: 'مشعل ناصر الزمنان', civil_number: '275033411111', sector: 'قطاع الإعلام', directorate: 'إدارة الشؤون الإدارية', department: 'قسم الموارد البشرية', role: 'supervisor', email: 'supervisor@demo.com' },
+      { employee_number: '30001', password: 'demo123', full_name: 'مشعل ناصر الزمنان', civil_number: '268011322222', sector: 'قطاع الإعلام', directorate: 'إدارة الشؤون الإدارية', department: 'قسم الموارد البشرية', role: 'monitor', email: 'monitor@demo.com' },
+      { employee_number: '40001', password: 'demo123', full_name: 'حمد بن حيدر', civil_number: '260099433333', sector: 'قطاع الإعلام', directorate: 'إدارة الشؤون الإدارية', department: 'قسم الموارد البشرية', role: 'admin', email: 'admin@demo.com' }
     ];
     for (const u of users) {
       const hash_pw = await hash(u.password);

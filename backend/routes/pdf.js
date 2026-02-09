@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const auth = require('../middleware/auth');
 
-// GET /api/pdf/:id - Generate printable HTML form
-router.get('/:id', auth, async (req, res) => {
+// GET /api/pdf/:id - Generate printable HTML form (no auth required for printing)
+router.get('/:id', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT f.*, u.full_name as employee_name, u.civil_number as employee_civil,
