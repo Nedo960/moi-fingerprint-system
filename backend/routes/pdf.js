@@ -74,19 +74,9 @@ router.get('/:id', async (req, res) => {
           <div style="font-size:11px;">دولة الكويت | State of Kuwait</div>
         </td>
         <td style="border:none; text-align:center; width:34%;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:80px; height:80px;">
-            <!-- Kuwait Emblem - Simplified representation -->
-            <!-- Shield shape -->
-            <path d="M50 10 L20 30 L20 70 L50 90 L80 70 L80 30 Z" fill="#007a33" stroke="#000" stroke-width="2"/>
-            <!-- Falcon silhouette -->
-            <ellipse cx="50" cy="45" rx="15" ry="20" fill="#c09957"/>
-            <circle cx="45" cy="42" r="2" fill="#000"/>
-            <circle cx="55" cy="42" r="2" fill="#000"/>
-            <path d="M50 48 L45 55 L50 53 L55 55 Z" fill="#8b6914"/>
-            <!-- Dhow (traditional boat) -->
-            <path d="M30 75 L70 75 L65 85 L35 85 Z" fill="#8b6914"/>
-            <path d="M50 60 L50 75" stroke="#8b6914" stroke-width="2"/>
-          </svg>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Emblem_of_Kuwait.svg/200px-Emblem_of_Kuwait.svg.png"
+               alt="شعار الكويت"
+               style="width:80px; height:80px; object-fit:contain;" />
         </td>
         <td style="border:none; text-align:left; width:33%;"></td>
       </tr>
