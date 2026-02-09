@@ -9,6 +9,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: '5mb' })); // signatures are base64 images
+app.use('/public', express.static(path.join(__dirname, 'public'))); // Serve static files
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));

@@ -74,9 +74,10 @@ router.get('/:id', async (req, res) => {
           <div style="font-size:11px;">دولة الكويت | State of Kuwait</div>
         </td>
         <td style="border:none; text-align:center; width:34%;">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Emblem_of_Kuwait.svg/200px-Emblem_of_Kuwait.svg.png"
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Emblem_of_Kuwait.svg/240px-Emblem_of_Kuwait.svg.png"
                alt="شعار الكويت"
-               style="width:80px; height:80px; object-fit:contain;" />
+               style="width:90px; height:90px; object-fit:contain;"
+               crossorigin="anonymous" />
         </td>
         <td style="border:none; text-align:left; width:33%;"></td>
       </tr>
