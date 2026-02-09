@@ -45,6 +45,19 @@ app.get('/api/setup-demo', async (req, res) => {
   }
 });
 
+// Update existing user names
+app.get('/api/update-names', async (req, res) => {
+  try {
+    await pool.query(`UPDATE users SET full_name = 'محمد بدر صقر الرشيدي' WHERE employee_number = '10001'`);
+    await pool.query(`UPDATE users SET full_name = 'مشعل ناصر الزمنان' WHERE employee_number = '20001'`);
+    await pool.query(`UPDATE users SET full_name = 'مشعل ناصر الزمنان' WHERE employee_number = '30001'`);
+    await pool.query(`UPDATE users SET full_name = 'حمد بن حيدر' WHERE employee_number = '40001'`);
+    res.json({ success: true, message: '✅ Names updated successfully!' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Initialize DB schema
 async function initDB() {
   try {
