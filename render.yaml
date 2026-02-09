@@ -1,8 +1,7 @@
 services:
-  # Backend API
   - type: web
     name: moi-fingerprint-backend
-    runtime: node
+    env: node
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
@@ -15,21 +14,15 @@ services:
         generateValue: true
       - key: NODE_ENV
         value: production
-      - key: EMAIL_USER
-        sync: false
-      - key: EMAIL_PASS
-        sync: false
+      - key: PORT
+        value: 10000
 
-  # Frontend
   - type: web
     name: moi-fingerprint-frontend
-    runtime: static
+    env: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: build
-    envVars:
-      - key: REACT_APP_API_URL
-        value: https://moi-fingerprint-backend.onrender.com/api
 
 databases:
   - name: moi-fingerprint-db
