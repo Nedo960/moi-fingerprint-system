@@ -59,13 +59,11 @@ app.get('/api/update-names', async (req, res) => {
   }
 });
 
-// Update demo account details (civil ID, names, remove defaults)
+// Update demo account details (civil ID, names, clear employee defaults only)
 app.get('/api/update-demo-details', async (req, res) => {
   try {
-    await pool.query(`UPDATE users SET civil_number = '296102200447' WHERE employee_number = '10001'`);
-    await pool.query(`UPDATE users SET full_name = 'مشعل سالم سعود الزمانان' WHERE employee_number = '20001'`);
-    await pool.query(`UPDATE users SET full_name = 'مشعل سالم سعود الزمانان' WHERE employee_number = '30001'`);
-    await pool.query(`UPDATE users SET sector = NULL, directorate = NULL, department = NULL WHERE role = 'employee'`);
+    await pool.query(`UPDATE users SET civil_number = '296102200447', sector = NULL, directorate = NULL, department = NULL WHERE employee_number = '10001'`);
+    await pool.query(`UPDATE users SET full_name = 'مشعل سالم سعود الزمانان' WHERE employee_number IN ('20001', '30001')`);
     res.json({ success: true, message: '✅ Demo details updated!' });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
