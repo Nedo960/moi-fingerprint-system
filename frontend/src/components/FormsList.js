@@ -40,6 +40,16 @@ export default function FormsList({ refresh }) {
 
   useEffect(() => { fetchForms(); }, [refresh]);
 
+  const handleDelete = async (formId) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
+    try {
+      await API.delete(`/forms/${formId}`);
+      fetchForms();
+    } catch (err) {
+      alert(err.response?.data?.message || 'حدث خطأ أثناء الحذف');
+    }
+  };
+
   const handleApproved = () => {
     setSelectedForm(null);
     fetchForms();
@@ -90,6 +100,10 @@ export default function FormsList({ refresh }) {
                     {f.status === 'approved' ? (
                       <button className="btn btn-outline" style={{ padding: '4px 12px', fontSize: 12 }} onClick={() => printForm(f.id)}>
                         🖨️ طباعة
+                      </button>
+                    ) : user?.role === 'employee' && f.status === 'pending_supervisor' ? (
+                      <button className="btn btn-danger" style={{ padding: '4px 12px', fontSize: 12 }} onClick={() => handleDelete(f.id)}>
+                        حذف
                       </button>
                     ) : (
                       (user?.role !== 'employee') && (

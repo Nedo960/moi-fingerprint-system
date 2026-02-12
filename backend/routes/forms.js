@@ -194,4 +194,30 @@ router.post('/:id/reject', auth, async (req, res) => {
   }
 });
 
+// DELETE /api/forms/:id - Delete pending form (employee only, before approval)
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const formRes = await pool.query('SELECT * FROM forms WHERE id = $1', [req.params.id]);
+    if (formRes.rows.length === 0) return res.status(404).json({ message: 'النموذج غير موجود' });
+
+    const form = formRes.rows[0];
+
+    // Only employee who owns the form can delete
+    if (req.user.role !== 'employee' || form.employee_id !== req.user.id) {
+      return res.status(403).json({ message: 'غير مصرح لك بحذف هذا النموذج' });
+    }
+
+    // Only allow deletion if still pending supervisor (no approvals yet)
+    if (form.status !== 'pending_supervisor') {
+      return res.status(400).json({ message: 'لا يمكن حذف النموذج بعد بدء الموافقات' });
+    }
+
+    await pool.query('DELETE FROM forms WHERE id = $1', [req.params.id]);
+    res.json({ message: 'تم حذف الطلب بنجاح' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'خطأ في الخادم' });
+  }
+});
+
 module.exports = router;
