@@ -106,6 +106,7 @@ export default function SubmitForm({ onSubmitted }) {
               type="date"
               value={form.date}
               onChange={handleDateChange}
+              max={new Date().toISOString().split('T')[0]}
               required
             />
           </div>
