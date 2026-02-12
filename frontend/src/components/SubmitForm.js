@@ -7,9 +7,9 @@ const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربع�
 export default function SubmitForm({ onSubmitted }) {
   const { user } = useAuth();
   const [form, setForm] = useState({
-    sector: user?.sector || '',
-    directorate: user?.directorate || '',
-    department: user?.department || '',
+    sector: '',
+    directorate: '',
+    department: '',
     day_name: '',
     date: '',
     fingerprint_presence: false,

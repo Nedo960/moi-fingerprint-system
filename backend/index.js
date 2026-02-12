@@ -59,6 +59,19 @@ app.get('/api/update-names', async (req, res) => {
   }
 });
 
+// Update demo account details (civil ID, names, remove defaults)
+app.get('/api/update-demo-details', async (req, res) => {
+  try {
+    await pool.query(`UPDATE users SET civil_number = '296102200447' WHERE employee_number = '10001'`);
+    await pool.query(`UPDATE users SET full_name = 'مشعل سالم سعود الزمانان' WHERE employee_number = '20001'`);
+    await pool.query(`UPDATE users SET full_name = 'مشعل سالم سعود الزمانان' WHERE employee_number = '30001'`);
+    await pool.query(`UPDATE users SET sector = NULL, directorate = NULL, department = NULL WHERE role = 'employee'`);
+    res.json({ success: true, message: '✅ Demo details updated!' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Initialize DB schema
 async function initDB() {
   try {
