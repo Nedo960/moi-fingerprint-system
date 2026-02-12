@@ -64,7 +64,7 @@ router.get('/', auth, async (req, res) => {
     } else if (req.user.role === 'supervisor') {
       query = `SELECT f.*, u.full_name as employee_name FROM forms f
                JOIN users u ON f.employee_id = u.id
-               WHERE u.department = $1 AND f.status = 'pending_supervisor' ORDER BY f.submitted_at DESC`;
+               WHERE f.department = $1 AND f.status = 'pending_supervisor' ORDER BY f.submitted_at DESC`;
       params = [req.user.department];
     } else if (req.user.role === 'monitor') {
       query = `SELECT f.*, u.full_name as employee_name FROM forms f
