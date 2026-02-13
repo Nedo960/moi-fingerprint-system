@@ -70,6 +70,16 @@ app.get('/api/update-demo-details', async (req, res) => {
   }
 });
 
+// Restore supervisor/monitor/admin departments (fix visibility issue)
+app.get('/api/restore-supervisor-departments', async (req, res) => {
+  try {
+    await pool.query(`UPDATE users SET department = 'قسم الموارد البشرية' WHERE employee_number IN ('20001', '30001', '40001')`);
+    res.json({ success: true, message: '✅ Supervisor departments restored!' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Initialize DB schema
 async function initDB() {
   try {
