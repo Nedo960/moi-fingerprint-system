@@ -1,17 +1,26 @@
 # MOI Fingerprint System - Technical Summary
 
-**Last Updated:** February 13, 2026
-**Status:** ✅ Fully Functional Demo
-**Purpose:** Quick reference for AI assistants and developers
+**Last Updated:** February 13, 2026 | **Status:** ✅ Fully Functional Demo
 
 ---
 
-## 🌐 Deployment URLs
+## 🚀 Quick Start
 
-- **Frontend (Netlify):** https://lambent-kheer-854b54.netlify.app
-- **Backend (Render):** https://moi-fingerprint-backend.onrender.com
-- **GitHub Repo:** https://github.com/Nedo960/moi-fingerprint-system
-- **Database:** PostgreSQL on Render (Free tier)
+**URLs:**
+- Frontend: https://lambent-kheer-854b54.netlify.app
+- Backend: https://moi-fingerprint-backend.onrender.com
+- GitHub: https://github.com/Nedo960/moi-fingerprint-system
+
+**Test Credentials:**
+| ID | Password | Role | Name | Department |
+|----|----------|------|------|------------|
+| 10001 | demo123 | Employee | محمد بدر صقر الرشيدي | (blank - enter manually) |
+| 20001 | demo123 | Supervisor | مشعل سالم سعود الزمانان | هندسة الاستوديوهات الإذاعية |
+| 40001 | demo123 | Admin | حمد بن حيدر | قسم الشؤون الإدارية |
+
+**Workflow:** Employee submits → Supervisor approves → Monitor auto-skips (same person) → Admin approves → PDF prints
+
+**⚠️ Dashboard Empty?** Employee must enter dept: `هندسة الاستوديوهات الإذاعية`. Debug: `/api/debug-state`
 
 ---
 
@@ -161,66 +170,26 @@ created_at TIMESTAMP
 
 ## 🎨 UI Features
 
-- **Language:** Arabic RTL only
-- **Theme:** Blue/green government colors
-- **Responsive:** Works on mobile (especially for signatures)
-- **Signature Pad:** Uses `signature_pad` library (finger/stylus)
-- **Notifications:** Bell icon with unread count
-- **Forms List:** Different views per role
-- **PDF Print:** Opens in new tab with print button
-- **Delete Button:** Employees can delete requests before supervisor approval (status=pending_supervisor only)
-- **Date Restriction:** Calendar picker prevents selecting future dates (max=today)
-
----
-
-## 📋 Demo Accounts
-
-| Employee # | Password | Role | Name | Department | Civil ID |
-|-----------|----------|------|------|------------|----------|
-| 10001 | demo123 | employee | محمد بدر صقر الرشيدي | (blank - user enters) | 296102200447 |
-| 10002 | demo123 | employee | فاطمة علي الرشيدي | (blank - user enters) | 290456678901 |
-| 20001 | demo123 | supervisor | مشعل سالم سعود الزمانان | هندسة الاستوديوهات الإذاعية | 275033411111 |
-| 30001 | demo123 | monitor | مشعل سالم سعود الزمانان | هندسة الاستوديوهات الإذاعية | 268011322222 |
-| 40001 | demo123 | admin | حمد بن حيدر | قسم الشؤون الإدارية | 260099433333 |
-
-**Important Notes:**
-- 20001 (supervisor) and 30001 (monitor) are the same person, so monitor step auto-skips
-- Employee department fields are NOT pre-filled - must be entered manually
-- Supervisor sees forms where form.department = "هندسة الاستوديوهات الإذاعية"
-- Admin sees ALL forms regardless of department
+Arabic RTL, responsive design, signature pad (touch/stylus), notifications bell, delete requests (pending only), date picker (max=today)
 
 ---
 
 ## 🔌 API Endpoints
 
-### Authentication
-- `POST /api/auth/login` - Login with employee_number + password
-
-### Forms
-- `GET /api/forms` - Get forms (filtered by user role)
-- `POST /api/forms` - Submit new form (employee only)
-- `GET /api/forms/:id` - Get single form details
-- `POST /api/forms/:id/approve` - Approve with signature
-- `POST /api/forms/:id/reject` - Reject with reason
-- `DELETE /api/forms/:id` - Delete pending request (employee only, status=pending_supervisor)
-
-### Notifications
-- `GET /api/notifications` - Get user's notifications
-- `PUT /api/notifications/:id/read` - Mark single as read
-- `PUT /api/notifications/read-all` - Mark all as read
-
-### PDF
-- `GET /api/pdf/:id` - Generate printable HTML (no auth required)
-
-### Setup (Demo Only)
-- `GET /api/setup-demo` - Create demo accounts (inserts with ON CONFLICT DO NOTHING)
-- `GET /api/update-names` - Update existing demo account names
-- `GET /api/update-demo-details` - Update civil ID, names, clear employee department
-- `GET /api/update-departments` - Set supervisor/monitor/admin departments
-- `GET /api/debug-state` - View current users and forms (debugging)
-
-### Health
-- `GET /api/health` - Server status check
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | /api/auth/login | Login | ✗ |
+| GET | /api/forms | List forms (role-filtered) | ✓ |
+| POST | /api/forms | Submit form | Employee |
+| DELETE | /api/forms/:id | Delete pending | Employee |
+| POST | /api/forms/:id/approve | Approve + signature | Approver |
+| POST | /api/forms/:id/reject | Reject + reason | Approver |
+| GET | /api/notifications | List notifications | ✓ |
+| PUT | /api/notifications/:id/read | Mark read | ✓ |
+| GET | /api/pdf/:id | Generate printable HTML | ✗ |
+| GET | /api/setup-demo | Create demo accounts | ✗ |
+| GET | /api/update-departments | Fix supervisor depts | ✗ |
+| GET | /api/debug-state | Inspect DB state | ✗ |
 
 ---
 
@@ -246,20 +215,12 @@ created_at TIMESTAMP
 
 ## 🔧 Environment Variables
 
-### Backend (.env)
-```env
-DATABASE_URL=postgresql://...         # Render PostgreSQL
-JWT_SECRET=random_secret_key
-NODE_ENV=production
-PORT=10000
-EMAIL_USER=your_gmail@gmail.com       # Optional
-EMAIL_PASS=gmail_app_password         # Optional
-```
-
-### Frontend (Netlify)
-```env
-REACT_APP_API_URL=https://moi-fingerprint-backend.onrender.com/api
-```
+| Service | Variable | Required | Example |
+|---------|----------|----------|---------|
+| Backend | DATABASE_URL | ✓ | postgresql://... |
+| Backend | JWT_SECRET | ✓ | random_string |
+| Backend | EMAIL_USER | ✗ | gmail@gmail.com |
+| Frontend | REACT_APP_API_URL | ✓ | https://backend.com/api |
 
 ---
 
@@ -281,32 +242,16 @@ npm run build
 
 ---
 
-## 🐛 Known Issues & Solutions
+## 🐛 Troubleshooting
 
-### Issue 1: Supervisor dashboard empty after updates
-**Root Cause:** The `/api/update-demo-details` endpoint previously cleared department for ALL users including supervisors. This broke the query: `WHERE f.department = $1 AND u.department IS NULL`.
-
-**Solution:**
-1. Visit `/api/update-departments` to restore supervisor/monitor/admin departments
-2. Employee must enter department matching supervisor's department exactly
-3. Use `/api/debug-state` to verify current department values
-
-**Fixed in commit 7ae0879** - Now only clears employee department, preserves supervisor/monitor/admin
-
-### Issue 2: Date picker allows future dates
-**Solution:** Added `max={today}` attribute to date input (fixed in commit 4d8dbc1)
-
-### Issue 3: Employee cannot delete request
-**Solution:** Added DELETE endpoint, only allows deletion when status='pending_supervisor' (commit 8447de4)
-
-### Issue 4: Emblem not showing in PDF
-**Solution:** Ensure `kuwait_emblem.png` is in `backend/public/` and served via static middleware
-
-### Issue 5: Email not sending
-**Solution:** EMAIL_USER and EMAIL_PASS not set (in-app notifications still work)
-
-### Issue 6: Monitor step not skipping
-**Solution:** Check if supervisor_id and monitor role user are same person (auto-skip logic in forms.js:128-134)
+| Issue | Solution |
+|-------|----------|
+| Supervisor dashboard empty | Employee must enter dept: `هندسة الاستوديوهات الإذاعية`. Run `/api/update-departments` if needed |
+| Emblem not showing | Ensure `kuwait_emblem.png` in `backend/public/` |
+| Email not sending | Set EMAIL_USER/EMAIL_PASS (in-app notifications work regardless) |
+| Monitor step not skipping | Verify supervisor user has monitor role (auto-skip in forms.js:128-134) |
+| Cannot delete request | Only allowed when status=pending_supervisor |
+| Future dates selectable | Fixed: max=today in SubmitForm.js:109 |
 
 ---
 
@@ -345,150 +290,35 @@ Employee can DELETE only at pending_supervisor stage
 
 ---
 
-## 📅 Recent Changes (February 13, 2026)
-
-### Commits Made
-1. **8447de4** - Fixed supervisor dashboard visibility by changing query from `u.department` to `f.department`
-2. **4d8dbc1** - Fixed supervisor approval: only clear employee department, not supervisor/monitor/admin
-3. **2ede4fc** - Added `/api/restore-supervisor-departments` endpoint to fix visibility issue
-4. **1778c02** - Added `/api/debug-state` endpoint for database inspection
-5. **7ae0879** - Updated user departments: 20001/30001 → هندسة الاستوديوهات الإذاعية, 40001 → قسم الشؤون الإدارية
-6. **15356e5** - Updated seed data with new department assignments
-7. **Previous** - Added DELETE functionality for pending requests
-8. **Previous** - Added date restriction (max=today) to prevent future dates
-9. **Previous** - Updated demo names to actual Ministry personnel
-
-### Critical Bug Fix: Supervisor Dashboard Visibility
-**Problem:** After adding delete functionality, supervisors couldn't see any requests. Admin could see all, but supervisor/monitor dashboards were empty.
-
-**Root Cause:** The `/api/update-demo-details` endpoint was clearing `department` field for ALL users (including supervisors), not just employees. This broke two queries:
-1. Notification query: `SELECT id FROM users WHERE role='supervisor' AND department=$1` returned 0 results
-2. Dashboard query: `WHERE f.department=$1 AND u.department IS NULL` returned empty
-
-**Solution:**
-1. Modified `/api/update-demo-details` to only clear department for employee 10001
-2. Created `/api/update-departments` to restore supervisor/monitor/admin departments
-3. Fixed query logic to check `f.department` instead of `u.department`
-
-### Testing Workflow
-To test the complete workflow:
-1. Employee (10001) submits form with department: "هندسة الاستوديوهات الإذاعية"
-2. Supervisor (20001) sees request in dashboard
-3. Supervisor approves → monitor auto-skipped (same person) → status='pending_admin'
-4. Admin (40001) approves → status='approved'
-5. Employee prints PDF with all signatures
-
----
 
 ## 📦 Dependencies
 
-### Backend
-- express (5.2.1) - Web framework
-- pg (8.18.0) - PostgreSQL client
-- bcryptjs (3.0.3) - Password hashing
-- jsonwebtoken (9.0.3) - JWT auth
-- nodemailer (8.0.1) - Email sending
-- cors (2.8.6) - CORS handling
-- dotenv (17.2.4) - Environment vars
-- uuid (13.0.0) - UUID generation
-
-### Frontend
-- react (18.x) - UI framework
-- axios - HTTP client
-- signature_pad - Digital signatures
-- react-router-dom - Routing
+**Backend:** express, pg, bcryptjs, jsonwebtoken, nodemailer, cors, dotenv, uuid
+**Frontend:** react 18, axios, signature_pad, react-router-dom
 
 ---
 
-## 🔒 Security Features
+## 🔒 Security
 
-- ✅ JWT authentication
-- ✅ Bcrypt password hashing (10 rounds)
-- ✅ SQL injection protection (parameterized queries)
-- ✅ CORS enabled for frontend domain
-- ✅ 5MB limit on request body (signature images)
-- ✅ Token expiration (8 hours)
-- ✅ Password never returned in API responses
+JWT auth (8h expiry), bcrypt hashing, parameterized SQL queries, CORS, 5MB body limit, no password exposure in responses
 
 ---
 
-## 🎨 Styling Approach
+## 🎨 Styling
 
-- **No CSS framework** - Custom CSS in `index.css`
-- **RTL Support** - `direction: rtl` on body
-- **Colors:**
-  - Primary: #1a3a5c (dark blue)
-  - Success: #27ae60 (green)
-  - Danger: #e74c3c (red)
-  - Warning: #d68910 (gold)
-- **Fonts:** Arabic-friendly system fonts
-- **Icons:** Unicode emoji (🏛️ 🔔 📋 🖨️)
+Custom CSS (no framework), RTL support, blue/green/red/gold palette, Arabic fonts, emoji icons
 
 ---
 
-## 📝 Form Fields (Arabic)
+## 📝 Form Fields
 
-| Field | Arabic | Type |
-|-------|--------|------|
-| Sector | القطاع | Text |
-| Directorate | الإدارة | Text |
-| Department | القسم | Text |
-| Name | الاسم | Auto-filled |
-| ID Number | رقم الهوية | Auto-filled |
-| Civil Number | الرقم المدني | Auto-filled |
-| Presence Fingerprint | بصمة التواجد | Checkbox |
-| Departure Fingerprint | بصمة الانصراف | Checkbox |
-| Day | اليوم | Auto-filled from date |
-| Date | التاريخ | Date picker |
+القطاع (sector), الإدارة (directorate), القسم (department), الاسم (name), الرقم المدني (civil), بصمة التواجد/الانصراف (checkboxes), التاريخ (date picker, max=today)
 
 ---
 
-## 🔮 Future Enhancement Ideas
+## 🔮 Future Enhancements
 
-1. **IT Integration** - Direct API to fingerprint system (no printing)
-2. **Analytics Dashboard** - Forms per month, approval times
-3. **Multi-language** - Arabic/English toggle
-4. **Bulk Approval** - Supervisor approves multiple at once
-5. **Deadline Enforcement** - Auto-reject after 3 days
-6. **SMS Notifications** - Kuwait SMS gateway integration
-7. **Mobile App** - Native iOS/Android apps
-8. **Digital Archive** - Long-term form storage
-9. **Audit Trail** - Full log of all changes
-10. **Advanced Search** - Filter by date range, employee, status
-
----
-
-## 🆘 Troubleshooting
-
-### Backend won't start
-1. Check DATABASE_URL is set
-2. Check JWT_SECRET is set
-3. Check PostgreSQL is accessible
-4. Run `npm install` again
-
-### Frontend API errors
-1. Check REACT_APP_API_URL is correct
-2. Check backend is running
-3. Check CORS is enabled
-4. Clear localStorage and re-login
-
-### PDF not generating
-1. Check form status is "approved"
-2. Check all 3 signatures exist
-3. Check emblem file exists at `/public/kuwait_emblem.png`
-
-### Names are wrong
-1. Visit `/api/update-names` endpoint
-2. Check database directly
-3. Re-run seed if needed
-
----
-
-## 📞 Support
-
-- **GitHub Issues:** https://github.com/Nedo960/moi-fingerprint-system/issues
-- **Render Logs:** Check backend service logs for errors
-- **Browser Console:** Check for frontend errors
+IT integration (no printing), analytics dashboard, AR/EN toggle, bulk approval, auto-reject deadlines, SMS notifications, mobile apps, digital archive, audit trail, advanced search
 
 ---
 
