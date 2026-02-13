@@ -80,6 +80,21 @@ app.get('/api/restore-supervisor-departments', async (req, res) => {
   }
 });
 
+// Debug: Check database state
+app.get('/api/debug-state', async (req, res) => {
+  try {
+    const users = await pool.query(`SELECT employee_number, full_name, department, role FROM users ORDER BY employee_number`);
+    const forms = await pool.query(`SELECT id, employee_id, department, status, date FROM forms ORDER BY submitted_at DESC LIMIT 10`);
+    res.json({
+      users: users.rows,
+      forms: forms.rows,
+      message: '✅ Debug data retrieved'
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Initialize DB schema
 async function initDB() {
   try {
