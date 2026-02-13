@@ -1,6 +1,6 @@
 # MOI Fingerprint System - Technical Summary
 
-**Last Updated:** February 9, 2026
+**Last Updated:** February 13, 2026
 **Status:** ✅ Fully Functional Demo
 **Purpose:** Quick reference for AI assistants and developers
 
@@ -168,20 +168,26 @@ created_at TIMESTAMP
 - **Notifications:** Bell icon with unread count
 - **Forms List:** Different views per role
 - **PDF Print:** Opens in new tab with print button
+- **Delete Button:** Employees can delete requests before supervisor approval (status=pending_supervisor only)
+- **Date Restriction:** Calendar picker prevents selecting future dates (max=today)
 
 ---
 
 ## 📋 Demo Accounts
 
-| Employee # | Password | Role | Name |
-|-----------|----------|------|------|
-| 10001 | demo123 | employee | محمد بدر صقر الرشيدي |
-| 10002 | demo123 | employee | فاطمة علي الرشيدي |
-| 20001 | demo123 | supervisor | مشعل ناصر الزمنان |
-| 30001 | demo123 | monitor | مشعل ناصر الزمنان |
-| 40001 | demo123 | admin | حمد بن حيدر |
+| Employee # | Password | Role | Name | Department | Civil ID |
+|-----------|----------|------|------|------------|----------|
+| 10001 | demo123 | employee | محمد بدر صقر الرشيدي | (blank - user enters) | 296102200447 |
+| 10002 | demo123 | employee | فاطمة علي الرشيدي | (blank - user enters) | 290456678901 |
+| 20001 | demo123 | supervisor | مشعل سالم سعود الزمانان | هندسة الاستوديوهات الإذاعية | 275033411111 |
+| 30001 | demo123 | monitor | مشعل سالم سعود الزمانان | هندسة الاستوديوهات الإذاعية | 268011322222 |
+| 40001 | demo123 | admin | حمد بن حيدر | قسم الشؤون الإدارية | 260099433333 |
 
-**Note:** 20001 (supervisor) and 30001 (monitor) are the same person, so monitor step auto-skips.
+**Important Notes:**
+- 20001 (supervisor) and 30001 (monitor) are the same person, so monitor step auto-skips
+- Employee department fields are NOT pre-filled - must be entered manually
+- Supervisor sees forms where form.department = "هندسة الاستوديوهات الإذاعية"
+- Admin sees ALL forms regardless of department
 
 ---
 
@@ -196,6 +202,7 @@ created_at TIMESTAMP
 - `GET /api/forms/:id` - Get single form details
 - `POST /api/forms/:id/approve` - Approve with signature
 - `POST /api/forms/:id/reject` - Reject with reason
+- `DELETE /api/forms/:id` - Delete pending request (employee only, status=pending_supervisor)
 
 ### Notifications
 - `GET /api/notifications` - Get user's notifications
@@ -208,6 +215,9 @@ created_at TIMESTAMP
 ### Setup (Demo Only)
 - `GET /api/setup-demo` - Create demo accounts (inserts with ON CONFLICT DO NOTHING)
 - `GET /api/update-names` - Update existing demo account names
+- `GET /api/update-demo-details` - Update civil ID, names, clear employee department
+- `GET /api/update-departments` - Set supervisor/monitor/admin departments
+- `GET /api/debug-state` - View current users and forms (debugging)
 
 ### Health
 - `GET /api/health` - Server status check
@@ -273,26 +283,41 @@ npm run build
 
 ## 🐛 Known Issues & Solutions
 
-### Issue 1: Names not updating
-**Solution:** Visit `/api/update-names` endpoint (not /api/setup-demo)
+### Issue 1: Supervisor dashboard empty after updates
+**Root Cause:** The `/api/update-demo-details` endpoint previously cleared department for ALL users including supervisors. This broke the query: `WHERE f.department = $1 AND u.department IS NULL`.
 
-### Issue 2: Emblem not showing
-**Solution:** Ensure `kuwait_emblem.png` is in `backend/public/`
+**Solution:**
+1. Visit `/api/update-departments` to restore supervisor/monitor/admin departments
+2. Employee must enter department matching supervisor's department exactly
+3. Use `/api/debug-state` to verify current department values
 
-### Issue 3: Email not sending
+**Fixed in commit 7ae0879** - Now only clears employee department, preserves supervisor/monitor/admin
+
+### Issue 2: Date picker allows future dates
+**Solution:** Added `max={today}` attribute to date input (fixed in commit 4d8dbc1)
+
+### Issue 3: Employee cannot delete request
+**Solution:** Added DELETE endpoint, only allows deletion when status='pending_supervisor' (commit 8447de4)
+
+### Issue 4: Emblem not showing in PDF
+**Solution:** Ensure `kuwait_emblem.png` is in `backend/public/` and served via static middleware
+
+### Issue 5: Email not sending
 **Solution:** EMAIL_USER and EMAIL_PASS not set (in-app notifications still work)
 
-### Issue 4: Monitor step not skipping
-**Solution:** Check if supervisor_id and monitor role user are same person
+### Issue 6: Monitor step not skipping
+**Solution:** Check if supervisor_id and monitor role user are same person (auto-skip logic in forms.js:128-134)
 
 ---
 
 ## 🎯 Business Logic
 
 ### Department-based Approval
-- Supervisors see forms from their department only
-- Employee must be in same department as supervisor
-- Monitor and Admin see all pending forms
+- Supervisors see forms WHERE form.department = user.department AND status='pending_supervisor'
+- Monitors see forms WHERE status='pending_monitor' (all departments)
+- Admins see ALL forms regardless of status or department
+- Employee department is NOT pre-filled - must be entered manually each time
+- Query logic fixed in commit 8447de4: Changed from `u.department` to `f.department`
 
 ### Signature Validation
 - Signature required before approval
@@ -301,14 +326,57 @@ npm run build
 
 ### Auto-skip Logic
 - If supervisor user has monitor role → skip monitor step
-- Implemented in `routes/forms.js` line 58-68
+- Implemented in `routes/forms.js` line 128-134
+- Sets `monitor_skipped = true` and jumps to `pending_admin`
+
+### Delete Request Logic
+- Employees can delete their own requests ONLY when status='pending_supervisor'
+- Once any approval is made, deletion is blocked
+- Validation: Check ownership (employee_id) and status before allowing DELETE
 
 ### Status Transitions
 ```
 pending_supervisor → pending_monitor → pending_admin → approved
                   ↘                 ↗
                     (skip if same person)
+
+Employee can DELETE only at pending_supervisor stage
 ```
+
+---
+
+## 📅 Recent Changes (February 13, 2026)
+
+### Commits Made
+1. **8447de4** - Fixed supervisor dashboard visibility by changing query from `u.department` to `f.department`
+2. **4d8dbc1** - Fixed supervisor approval: only clear employee department, not supervisor/monitor/admin
+3. **2ede4fc** - Added `/api/restore-supervisor-departments` endpoint to fix visibility issue
+4. **1778c02** - Added `/api/debug-state` endpoint for database inspection
+5. **7ae0879** - Updated user departments: 20001/30001 → هندسة الاستوديوهات الإذاعية, 40001 → قسم الشؤون الإدارية
+6. **15356e5** - Updated seed data with new department assignments
+7. **Previous** - Added DELETE functionality for pending requests
+8. **Previous** - Added date restriction (max=today) to prevent future dates
+9. **Previous** - Updated demo names to actual Ministry personnel
+
+### Critical Bug Fix: Supervisor Dashboard Visibility
+**Problem:** After adding delete functionality, supervisors couldn't see any requests. Admin could see all, but supervisor/monitor dashboards were empty.
+
+**Root Cause:** The `/api/update-demo-details` endpoint was clearing `department` field for ALL users (including supervisors), not just employees. This broke two queries:
+1. Notification query: `SELECT id FROM users WHERE role='supervisor' AND department=$1` returned 0 results
+2. Dashboard query: `WHERE f.department=$1 AND u.department IS NULL` returned empty
+
+**Solution:**
+1. Modified `/api/update-demo-details` to only clear department for employee 10001
+2. Created `/api/update-departments` to restore supervisor/monitor/admin departments
+3. Fixed query logic to check `f.department` instead of `u.department`
+
+### Testing Workflow
+To test the complete workflow:
+1. Employee (10001) submits form with department: "هندسة الاستوديوهات الإذاعية"
+2. Supervisor (20001) sees request in dashboard
+3. Supervisor approves → monitor auto-skipped (same person) → status='pending_admin'
+4. Admin (40001) approves → status='approved'
+5. Employee prints PDF with all signatures
 
 ---
 
